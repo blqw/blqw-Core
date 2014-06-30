@@ -23,7 +23,7 @@ namespace blqw
         /// </summary>
         public static bool IsNullable(this Type t)
         {
-            return (t.IsValueType && t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>));
+            return (t.IsValueType && t.IsGenericType && !t.IsGenericTypeDefinition && object.ReferenceEquals(t.GetGenericTypeDefinition(), typeof(Nullable<>)));
         }
 
         /// <summary> 检查指定类型是否是当前类型的子类
@@ -102,5 +102,6 @@ namespace blqw
 
             return name;
         }
+
     }
 }

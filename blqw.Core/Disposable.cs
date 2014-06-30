@@ -17,7 +17,16 @@ namespace blqw
         protected Disposable()
         {
             _obj = this;
+            _auto = true;
             _disposeMark = 0;
+        }
+
+        ~Disposable()
+        {
+            if (_auto)
+            {
+                Destructor();
+            }
         }
 
         public void Destructor()
@@ -27,6 +36,7 @@ namespace blqw
             Dispose();
         }
         private object _obj;
+        private readonly bool _auto;
         /// <summary> 释放标记,0未释放,1已释放,2执行了析构函数
         /// </summary>
         private int _disposeMark;
