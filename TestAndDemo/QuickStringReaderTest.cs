@@ -17,12 +17,12 @@ namespace TestAndDemo
 
             var read = new blqw.EasyStringReader(str);
 
-            var res = read.ReadToStop('=', ReadMode.SkipAll | ReadMode.RemoveStop);
+            var res = read.ReadToStop('=', ReadBehavior.TrimStart | ReadBehavior.ExcludeStop);
 
             Assert.AreEqual("str ", res);
 
 
-            res = read.ReadStartToStop('"', '"', ReadMode.SkipAll | ReadMode.ParseAll | ReadMode.RemoveAll);
+            res = read.ReadStartToStop('"', '"', ReadBehavior.TrimStart | ReadBehavior.ParseAll | ReadBehavior.ExcludeAll);
 
             Assert.AreEqual("12345\f\\u000\f789", res);
 
@@ -32,9 +32,9 @@ namespace TestAndDemo
 
             read = new blqw.EasyStringReader(str);
 
-            res = read.Read(2, ReadMode.ParseAll);
+            res = read.Read(2, ReadBehavior.ParseAll);
             Assert.AreEqual("12", res);
-            res = read.Read(9, ReadMode.ParseAll);
+            res = read.Read(9, ReadBehavior.ParseAll);
             Assert.AreEqual("345\f\\u000", res);
 
             Assert.AreEqual('\f', read.Current);
@@ -65,13 +65,13 @@ namespace TestAndDemo
             Assert.IsTrue(read.SkipWhiteSpace(true));
             Assert.AreEqual(':', read.Current);
             Assert.IsTrue(read.ReadNext());
-            res = read.ReadToStop(',', ReadMode.SkipAll | ReadMode.RemoveStop);
+            res = read.ReadToStop(',', ReadBehavior.TrimStart | ReadBehavior.ExcludeStop);
             Assert.AreEqual("24", res);
             res = read.ReadStartToStop(new[] { '"', '\'' }, true);
             Assert.AreEqual("Hobby", res);
             Assert.IsTrue(read.SkipWhiteSpace(true));
             Assert.AreEqual(':', read.Current);
-            Assert.IsTrue(read.ReadNext(ReadMode.SkipAll));
+            Assert.IsTrue(read.ReadNext(ReadBehavior.TrimStart));
             Assert.AreEqual('[', read.Current);
             Assert.IsTrue(read.ReadNext());
             res = read.ReadStartToStop(new[] { '"', '\'' }, true);

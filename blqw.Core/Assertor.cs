@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace blqw
@@ -34,6 +33,7 @@ namespace blqw
             }
         }
 
+#if !NF2
         /// <summary> 如果value字符串是 null、空还是仅由空白字符组成 则抛出异常
         /// </summary>
         /// <param name="value">参数值</param>
@@ -44,7 +44,8 @@ namespace blqw
             {
                 throw new ArgumentNullException(name, "字符串不能为null或连续空白");
             }
-        }
+        } 
+#endif
 
         /// <summary> 如果value集合是null或者Count是0 则抛出异常
         /// </summary>

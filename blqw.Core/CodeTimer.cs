@@ -7,15 +7,19 @@ namespace blqw
 {
     public static class CodeTimer
     {
+        private static bool _initialize = false;
         public static void Initialize()
         {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-            Thread.CurrentThread.Priority = ThreadPriority.Highest;
-            Time("", 1, () => { });
+            if (_initialize == false)
+            {
+                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                Time("", 1, () => { });
+                _initialize = true;
+            }
         }
 
-
-        public static void Time(string name, int iteration, Action action)
+        public static void Time(string name, int iteration, ThreadStart action)
         {
             if (String.IsNullOrEmpty(name)) return;
 
@@ -43,25 +47,30 @@ namespace blqw
             string format = "    {0}\t  :  {1}";
             // 4.
             Console.ForegroundColor = currentForeColor;
-            Console.WriteLine(format, "运行时间\t", watch.ElapsedMilliseconds.ToString("N0") + "ms");
-            Console.WriteLine(format, "CPU时钟周期\t", cpuCycles.ToString("N0"));
-
-            // 5.
-            for (int i = 0; i <= GC.MaxGeneration; i++)
-            {
-                int count = GC.CollectionCount(i) - gcCounts[i];
-                Console.WriteLine(format, i + "代垃圾 回收次数", count);
-            }
-
+            Console.WriteLine(" 运行时间    CPU时钟周期    垃圾回收( 1代      2代      3代 )");
+            format = " {0,-12}{1,-25}{2,-9}{3,-9}{4}";
+            object[] args = new object[6];
+            args[0] = watch.ElapsedMilliseconds.ToString("N0") + "ms";
+            args[1] = cpuCycles.ToString("N0");
+            if (GC.MaxGeneration >= 0) args[2] = GC.CollectionCount(0) - gcCounts[0];
+            if (GC.MaxGeneration >= 1) args[3] = GC.CollectionCount(1) - gcCounts[1];
+            if (GC.MaxGeneration >= 2) args[4] = GC.CollectionCount(2) - gcCounts[2];
+            Console.WriteLine(format, args);
             Console.WriteLine();
         }
+
+        [DllImport("kernel32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool QueryThreadCycleTime(IntPtr threadHandle, ref ulong cycleTime);
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetCurrentThread();
 
         private static ulong GetCycleCount()
         {
             ulong cycleCount = 0;
-            WinApi.QueryThreadCycleTime(WinApi.GetCurrentThread(), ref cycleCount);
+            QueryThreadCycleTime(GetCurrentThread(), ref cycleCount);
             return cycleCount;
         }
-
     }
 }

@@ -11,6 +11,7 @@ namespace Demo
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(Environment.NewLine);
             Console.WriteLine("{0,-10}:{1}","message","aaa");
             var a = StringBuilderTimer();
             var b = QuickStringWriterTimer();

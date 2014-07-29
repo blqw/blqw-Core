@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -68,7 +67,6 @@ namespace blqw
                 _disposeManaged = null;
                 GC.SuppressFinalize(_obj);
             }
-            _obj = _obj.GetType().FullName;
         }
 
         public bool IsDisposed

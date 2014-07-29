@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/blqw.Core/Literacy/Properties
+/blqw.Core/Literacy/Literacy.csproj
