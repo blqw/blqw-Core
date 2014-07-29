@@ -103,6 +103,24 @@ namespace blqw
         /// <param name="name">参数名称</param>
         /// <param name="min">最小值</param>
         /// <param name="max">最大值</param>
+        public static void AreInRange<T>(Nullable<T> value, string name, T min, T max)
+            where T : struct, IComparable
+        {
+            if (value.HasValue)
+            {
+                if (value.Value.CompareTo(min) < 0 || value.Value.CompareTo(max) > 0)
+                {
+                    throw new ArgumentOutOfRangeException(name, value, "值不能大于" + max + "或小于" + min);
+                }
+            }
+        }
+
+        /// <summary> 如果value值超过min~max 则抛出异常
+        /// </summary>
+        /// <param name="value">参数值</param>
+        /// <param name="name">参数名称</param>
+        /// <param name="min">最小值</param>
+        /// <param name="max">最大值</param>
         public static void AreInRange<T>(T value, string name, T min, T max)
             where T : IComparable<T>
         {
