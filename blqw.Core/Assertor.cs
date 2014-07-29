@@ -33,57 +33,19 @@ namespace blqw
             }
         }
 
-        /// <summary> 如果value集合是null或者Count是0 则抛出异常
-        /// </summary>
-        /// <param name="value">参数值</param>
-        /// <param name="name">参数名称</param>
-        public static void AreNullOrEmpty(ICollection value, string name)
-        {
-            if (value == null || value.Count == 0)
-            {
-                throw new ArgumentNullException(name, "集合不能为null且必须有元素");
-            }
-        }
-
-        /// <summary> 如果value集合是null或者Count是0 则抛出异常
-        /// </summary>
-        /// <param name="value">参数值</param>
-        /// <param name="name">参数名称</param>
-        public static void AreNullOrEmpty<T>(T[] value, string name)
-        {
-            if (value == null || value.Length == 0)
-            {
-                throw new ArgumentNullException(name, "集合不能为null且必须有元素");
-            }
-        }
-
-        /// <summary> 如果value集合是null或者Count是0 则抛出异常
-        /// </summary>
-        /// <param name="value">参数值</param>
-        /// <param name="name">参数名称</param>
-        public static void AreNullOrEmpty<T>(ICollection<T> value, string name)
-        {
-            if (value == null || value.Count == 0)
-            {
-                throw new ArgumentNullException(name, "集合不能为null且必须有元素");
-            }
-        }
-
+#if !NF2
         /// <summary> 如果value字符串是 null、空还是仅由空白字符组成 则抛出异常
         /// </summary>
         /// <param name="value">参数值</param>
         /// <param name="name">参数名称</param>
         public static void AreNullOrWhiteSpace(string value, string name)
         {
-#if !NF2
             if (string.IsNullOrWhiteSpace(value))
-#else
-            if(value == null || value.Length == 0 || value.Trim().Length == 0)
-#endif
             {
                 throw new ArgumentNullException(name, "字符串不能为null或连续空白");
             }
         } 
+#endif
 
         /// <summary> 如果value集合是null或者Count是0 则抛出异常
         /// </summary>
