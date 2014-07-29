@@ -45,6 +45,7 @@
     <Compile Include="CodeTimer.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="CounterChangedEventArgs.cs" />
+    <Compile Include="DataConverter.cs" />
     <Compile Include="DictionaryEx.cs" />
     <Compile Include="Disposable.cs" />
     <Compile Include="ExtendMethods\Type.cs" />
