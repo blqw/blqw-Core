@@ -55,6 +55,9 @@
     <Compile Include="Literacy\Literacy.cs" />
     <Compile Include="Literacy\ObjectProperty.cs" />
     <Compile Include="Literacy\ObjectPropertyCollection.cs" />
+    <Compile Include="Literacy\TypeCodes.cs" />
+    <Compile Include="Literacy\TypeInfo.cs" />
+    <Compile Include="Literacy\TypesHelper.cs" />
     <Compile Include="LoadResourceDll.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EasyStringReader.cs" />

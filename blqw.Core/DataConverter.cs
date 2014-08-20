@@ -6,33 +6,37 @@ using System.Data.Common;
 using System.Text;
 using System.Xml;
 
+//DataConverter 合并StringConverter 可空值类型转换还有bug 2014.08.08
+
 namespace blqw
 {
     public static class DataConverter
     {
         #region 初始化ChangedType<T>
 
+        delegate T ConvertTo<T>(object value, T defaultValue, bool throwOnError);
+
         private readonly static object[] Methods = InitConvertMethods();
 
         private static object[] InitConvertMethods()
         {
             var arr = new object[19];
-            arr[(int)TypeCode.Boolean] = (Func<object, Boolean, bool, Boolean>)ToBoolean;
-            arr[(int)TypeCode.Byte] = (Func<object, Byte, bool, Byte>)ToByte;
-            arr[(int)TypeCode.Char] = (Func<object, Char, bool, Char>)ToChar;
-            arr[(int)TypeCode.DateTime] = (Func<object, DateTime, bool, DateTime>)ToDateTime;
-            arr[(int)TypeCode.Decimal] = (Func<object, Decimal, bool, Decimal>)ToDecimal;
-            arr[(int)TypeCode.Double] = (Func<object, Double, bool, Double>)ToDouble;
-            arr[(int)TypeCode.Int16] = (Func<object, Int16, bool, Int16>)ToInt16;
-            arr[(int)TypeCode.Int32] = (Func<object, Int32, bool, Int32>)ToInt32;
-            arr[(int)TypeCode.Int64] = (Func<object, Int64, bool, Int64>)ToInt64;
-            arr[(int)TypeCode.SByte] = (Func<object, SByte, bool, SByte>)ToSByte;
-            arr[(int)TypeCode.Single] = (Func<object, Single, bool, Single>)ToSingle;
-            arr[(int)TypeCode.String] = (Func<object, String, bool, String>)ToString;
-            arr[(int)TypeCode.UInt16] = (Func<object, UInt16, bool, UInt16>)ToUInt16;
-            arr[(int)TypeCode.UInt32] = (Func<object, UInt32, bool, UInt32>)ToUInt32;
-            arr[(int)TypeCode.UInt64] = (Func<object, UInt64, bool, UInt64>)ToUInt64;
-            arr[(int)TypeCode.Object] = (Func<object, Guid, bool, Guid>)((v, d, e) => {
+            arr[(int)TypeCode.Boolean] = (ConvertTo<Boolean>)ToBoolean;
+            arr[(int)TypeCode.Byte] = (ConvertTo<Byte>)ToByte;
+            arr[(int)TypeCode.Char] = (ConvertTo<Char>)ToChar;
+            arr[(int)TypeCode.DateTime] = (ConvertTo<DateTime>)ToDateTime;
+            arr[(int)TypeCode.Decimal] = (ConvertTo<Decimal>)ToDecimal;
+            arr[(int)TypeCode.Double] = (ConvertTo<Double>)ToDouble;
+            arr[(int)TypeCode.Int16] = (ConvertTo<Int16>)ToInt16;
+            arr[(int)TypeCode.Int32] = (ConvertTo<Int32>)ToInt32;
+            arr[(int)TypeCode.Int64] = (ConvertTo<Int64>)ToInt64;
+            arr[(int)TypeCode.SByte] = (ConvertTo<SByte>)ToSByte;
+            arr[(int)TypeCode.Single] = (ConvertTo<Single>)ToSingle;
+            arr[(int)TypeCode.String] = (ConvertTo<String>)ToString;
+            arr[(int)TypeCode.UInt16] = (ConvertTo<UInt16>)ToUInt16;
+            arr[(int)TypeCode.UInt32] = (ConvertTo<UInt32>)ToUInt32;
+            arr[(int)TypeCode.UInt64] = (ConvertTo<UInt64>)ToUInt64;
+            arr[(int)TypeCode.Object] = (ConvertTo<Guid>)((v, d, e) => {
                 return ToGuid(v, d, e);
             });
             return arr;
@@ -304,7 +308,7 @@ namespace blqw
                 if (p == null)
                 {
                     p = lit.Property[reader.GetName(i)];
-                } 
+                }
                 props[i] = p;
             }
             return props;
@@ -370,6 +374,10 @@ namespace blqw
                         }
                         return ChangedType(value, type.GetGenericArguments()[0], throwOnError);
                     }
+                    else if (type == typeof(object))
+                    {
+                        return value;
+                    }
                     break;
                 case TypeCode.SByte:
                     return ToSByte(value, throwOnError: throwOnError);
@@ -405,9 +413,8 @@ namespace blqw
         {
             var type = typeof(T);
             var code = (int)Type.GetTypeCode(type);
-            Assertor.AreInRange(code, "T", 0, 18);
 
-            if (code == (int)TypeCode.Object && typeof(T) != typeof(Guid))
+            if (code == (int)TypeCode.Object && type != typeof(Guid))
             {
                 if (ExtendMethod.IsNullable(type))
                 {
@@ -427,7 +434,7 @@ namespace blqw
             {
                 return (T)ReturnOrThrow<T>(value, defaultValue, throwOnError);
             }
-            return ((Func<object, T, bool, T>)(met))(value, defaultValue, throwOnError);
+            return ((ConvertTo<T>)(met))(value, defaultValue, throwOnError);
         }
 
         #region 类型转换
@@ -436,7 +443,7 @@ namespace blqw
         {
             if (throwOnError)
             {
-                throw new InvalidCastException(string.Concat("值' ", value ?? "<NULL>", "' 无法转为 ", typeof(T).FullName, " 类型"));
+                throw new InvalidCastException(string.Concat("值' ", value ?? "<NULL>", "' 无法转为 ", ExtendMethod.DisplayName(typeof(T)), " 类型"));
             }
             else
             {
@@ -502,6 +509,18 @@ namespace blqw
                         }
                         break;
                     case TypeCode.String:
+                        var str = (string)value;
+                        if (str.Length == 1)
+                        {
+                            if (str[0] == '1')
+                            {
+                                return true;
+                            }
+                            else if (str[0] == '0')
+                            {
+                                return false;
+                            }
+                        }
                         bool i;
                         if (bool.TryParse((string)value, out i))
                         {
@@ -691,17 +710,44 @@ namespace blqw
                 return (Guid)value;
             }
             Byte[] bytes = value as Byte[];
-            if (bytes != null && bytes.Length == 16)
+            if (bytes != null)
             {
-                return new Guid(bytes);
+                if (bytes.Length == 16)
+                {
+                    try
+                    {
+                        return new Guid(bytes);
+                    }
+                    catch
+                    {
+                        if (throwOnError)
+                            throw;
+                        return defaultValue;
+                    }
+                }
+                return ReturnOrThrow(value, defaultValue, throwOnError);
             }
             if (value != null)
             {
+#if NF2
+                try
+                {
+                    return new Guid(value.ToString());
+                }
+                catch
+                {
+                    if (throwOnError)
+                        throw;
+                    return defaultValue;
+                }
+#else
                 Guid g;
                 if (Guid.TryParse(value.ToString(), out g))
                 {
                     return g;
                 }
+#endif
+
             }
             return ReturnOrThrow(value, defaultValue, throwOnError);
         }
@@ -1001,5 +1047,59 @@ namespace blqw
             return ReturnOrThrow(value, defaultValue, throwOnError);
         }
         #endregion
+
+
+        public static Converter<object, object> CreateConverter(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Boolean:
+                    return value => ToBoolean(value, throwOnError: true);
+                case TypeCode.Byte:
+                    return value => ToByte(value, throwOnError: true);
+                case TypeCode.Char:
+                    return value => ToChar(value, throwOnError: true);
+                case TypeCode.DateTime:
+                    return value => ToDateTime(value, throwOnError: true);
+                case TypeCode.Decimal:
+                    return value => ToDecimal(value, throwOnError: true);
+                case TypeCode.Double:
+                    return value => ToDouble(value, throwOnError: true);
+                case TypeCode.Int16:
+                    return value => ToInt16(value, throwOnError: true);
+                case TypeCode.Int32:
+                    return value => ToInt32(value, throwOnError: true);
+                case TypeCode.Int64:
+                    return value => ToInt64(value, throwOnError: true);
+                case TypeCode.Object:
+                    if (type == typeof(Guid))
+                    {
+                        return value => ToGuid(value, throwOnError: true);
+                    }
+                    else if (ExtendMethod.IsNullable(type))
+                    {
+                        type = type.GetGenericArguments()[0];
+                        var conv = CreateConverter(type);
+                        return value => value == null || value is DBNull ? null : conv(value);
+                    }
+                    break;
+                case TypeCode.SByte:
+                    return value => ToSByte(value, throwOnError: true);
+                case TypeCode.Single:
+                    return value => ToSingle(value, throwOnError: true);
+                case TypeCode.String:
+                    return value => ToString(value, throwOnError: true);
+                case TypeCode.UInt16:
+                    return value => ToUInt16(value, throwOnError: true);
+                case TypeCode.UInt32:
+                    return value => ToUInt32(value, throwOnError: true);
+                case TypeCode.UInt64:
+                    return value => ToUInt64(value, throwOnError: true);
+                default:
+                    break;
+            }
+            return null;
+        }
+
     }
 }

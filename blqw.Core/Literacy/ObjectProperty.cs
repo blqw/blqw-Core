@@ -10,7 +10,7 @@ namespace blqw
         /// <summary> 表示一个可以获取或者设置其内容的对象属性
         /// </summary>
         /// <param name="property">属性信息</param>
-        public ObjectProperty(PropertyInfo property)
+        internal ObjectProperty(PropertyInfo property)
         {
             Field = false;
             MemberInfo = property; //属性信息
@@ -29,13 +29,16 @@ namespace blqw
                 Static = get.IsStatic; //get.set只要有一个静态就是静态
                 IsPublic = IsPublic || get.IsPublic;
             }
+            ID = System.Threading.Interlocked.Increment(ref Literacy.Sequence);
+            UID = Guid.NewGuid();
             Init();
+            TypeCodes = TypeInfo.TypeCodes;
         }
 
         /// <summary> 表示一个可以获取或者设置其内容的对象字段
         /// </summary>
         /// <param name="field">字段信息</param>
-        public ObjectProperty(FieldInfo field)
+        internal ObjectProperty(FieldInfo field)
         {
             Field = true; //是一个字段
             MemberInfo = field; //字段信息
@@ -45,11 +48,18 @@ namespace blqw
             CanWrite = !field.IsInitOnly; //是否可写取决于ReadOnly
             CanRead = true; //字段一定可以读
             Init();
+            ID = System.Threading.Interlocked.Increment(ref Literacy.Sequence);
+            UID = Guid.NewGuid();
+            TypeCodes = TypeInfo.TypeCodes;
         }
 
         #region 只读属性
 
-        /// <summary> 
+        /// <summary> 属性/字段的类型信息
+        /// </summary>
+        public TypeInfo TypeInfo { get; private set; }
+
+        /// <summary> 属性/字段信息
         /// </summary>
         public MemberInfo MemberInfo { get; private set; }
 
@@ -208,12 +218,16 @@ namespace blqw
         {
             Name = MemberInfo.Name;
             ClassType = MemberInfo.DeclaringType;
-            if (OriginalType.IsValueType)
+            TypeInfo = TypesHelper.GetTypeInfo(OriginalType);
+            if (TypeInfo.IsNullable)
             {
-                MemberType = System.Nullable.GetUnderlyingType(OriginalType);
-                Nullable = MemberType != null;
+                Nullable = true;
+                MemberType = TypeInfo.UnderlyingType.Type;
             }
-            MemberType = MemberType ?? OriginalType;
+            else
+            {
+                MemberType = OriginalType;
+            }
             Getter = PreGetter;
             Setter = PreSetter;
         }
@@ -361,10 +375,23 @@ namespace blqw
 
         private AttributeCollection _attributes;
 
+        /// <summary> 成员特性
+        /// </summary>
         public AttributeCollection Attributes
         {
             get { return _attributes ?? (_attributes = new AttributeCollection(MemberInfo)); }
         }
 
+        /// <summary> 自增id 与Literacy共享序列
+        /// </summary>
+        public readonly int ID;
+
+        /// <summary> Guid
+        /// </summary>
+        public readonly Guid UID;
+
+        /// <summary> 指定对象类型
+        /// </summary>
+        public readonly TypeCodes TypeCodes;
     }
 }

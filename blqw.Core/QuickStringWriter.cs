@@ -37,16 +37,16 @@ namespace blqw
         /// <summary> 数字缓冲指针
         /// </summary>
         private unsafe char* _number;
-        private readonly IntPtr _numberIntPtr;
+        private IntPtr _numberIntPtr;
         /// <summary> 指针句柄
         /// </summary>
-        private readonly IntPtr _currIntPtr;
+        private IntPtr _currIntPtr;
         /// <summary> 一级缓冲指针
         /// </summary>
         private char* _current;
         /// <summary> 二级缓冲
         /// </summary>
-        private readonly string[] _buffer = new string[8];
+        private string[] _buffer = new string[8];
         /// <summary> 备用二级缓冲索引
         /// </summary>
         private int _bufferIndex;
@@ -246,159 +246,204 @@ namespace blqw
             }
             return this;
         }
+
+        /// <summary> 将 DateTime 对象转换为字符串追加到当前实例。
+        /// </summary>
+        public QuickStringWriter Append(DateTime val, bool date, bool time, bool millisecond)
+        {
+            TryWrite((date ? 10 : 0) + 1 + (time ? 8 : 0) + 1 + (millisecond ? 10 : 3));
+            int a;
+            if (date)
+            {
+                a = val.Year;
+                #region 年
+                if (a > 999)
+                {
+                    _current[_position++] = (char)(a / 1000 + '0');
+                    a = a % 1000;
+                    _current[_position++] = (char)(a / 100 + '0');
+                    a = a % 100;
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else if (a > 99)
+                {
+                    _current[_position++] = '0';
+                    _current[_position++] = (char)(a / 100 + '0');
+                    a = a % 100;
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else if (a > 9)
+                {
+                    _current[_position++] = '0';
+                    _current[_position++] = '0';
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                    _current[_position++] = '0';
+                    _current[_position++] = '0';
+                }
+
+                _current[_position++] = (char)(a + '0');
+                #endregion
+                _current[_position++] = '-';
+                a = val.Month;
+                #region 月
+                if (a > 9)
+                {
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                }
+                _current[_position++] = (char)(a + '0');
+                #endregion
+                a = val.Day;
+                _current[_position++] = '-';
+                #region 日
+                if (a > 9)
+                {
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                }
+                _current[_position++] = (char)(a + '0');
+                #endregion
+                if (time)
+                {
+                    _current[_position++] = ' ';
+                }
+            }
+            if (time)
+            {
+                a = val.Hour;
+                #region 时
+                if (a > 9)
+                {
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                }
+                _current[_position++] = (char)(a + '0');
+                #endregion
+                a = val.Minute;
+                _current[_position++] = ':';
+                #region 分
+                if (a > 9)
+                {
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                }
+                _current[_position++] = (char)(a + '0');
+                #endregion
+                a = val.Second;
+                _current[_position++] = ':';
+                #region 秒
+                if (a > 9)
+                {
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                }
+                _current[_position++] = (char)(a + '0');
+                #endregion
+                if (millisecond)
+                {
+                    _current[_position++] = '.';
+                }
+            }
+            if (millisecond)
+            {
+                a = val.Millisecond;
+                #region 毫秒
+                if (a > 99)
+                {
+                    _current[_position++] = '0';
+                    _current[_position++] = (char)(a / 100 + '0');
+                    a = a % 100;
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else if (a > 9)
+                {
+                    _current[_position++] = '0';
+                    _current[_position++] = '0';
+                    _current[_position++] = (char)(a / 10 + '0');
+                    a = a % 10;
+                }
+                else
+                {
+                    _current[_position++] = '0';
+                    _current[_position++] = '0';
+                    _current[_position++] = '0';
+                }
+
+                _current[_position++] = (char)(a + '0');
+                #endregion
+            }
+
+            return this;
+        }
         /// <summary> 将 DateTime 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(DateTime val)
         {
-            TryWrite(18);
-            int a = val.Year;
-            #region 年
-            if (a > 999)
-            {
-                _current[_position++] = (char)(a / 1000 + '0');
-                a = a % 1000;
-                _current[_position++] = (char)(a / 100 + '0');
-                a = a % 100;
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else if (a > 99)
-            {
-                _current[_position++] = '0';
-                _current[_position++] = (char)(a / 100 + '0');
-                a = a % 100;
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else if (a > 9)
-            {
-                _current[_position++] = '0';
-                _current[_position++] = '0';
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else
-            {
-                _current[_position++] = '0';
-                _current[_position++] = '0';
-                _current[_position++] = '0';
-            }
-
-            _current[_position++] = (char)(a + '0');
-            #endregion
-            _current[_position++] = '-';
-            a = val.Month;
-            #region 月
-            if (a > 9)
-            {
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else
-            {
-                _current[_position++] = '0';
-            }
-            _current[_position++] = (char)(a + '0');
-            #endregion
-            a = val.Day;
-            _current[_position++] = '-';
-            #region 日
-            if (a > 9)
-            {
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else
-            {
-                _current[_position++] = '0';
-            }
-            _current[_position++] = (char)(a + '0');
-            #endregion
-            a = val.Hour;
-            _current[_position++] = ' ';
-            #region 时
-            if (a > 9)
-            {
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else
-            {
-                _current[_position++] = '0';
-            }
-            _current[_position++] = (char)(a + '0');
-            #endregion
-            a = val.Minute;
-            _current[_position++] = ':';
-            #region 分
-            if (a > 9)
-            {
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else
-            {
-                _current[_position++] = '0';
-            }
-            _current[_position++] = (char)(a + '0');
-            #endregion
-            a = val.Second;
-            _current[_position++] = ':';
-            #region 秒
-            if (a > 9)
-            {
-                _current[_position++] = (char)(a / 10 + '0');
-                a = a % 10;
-            }
-            else
-            {
-                _current[_position++] = '0';
-            }
-            _current[_position++] = (char)(a + '0');
-            #endregion
-            return this;
+            return Append(val, true, true, false);
         }
         /// <summary> 将 Decimal 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(Decimal val)
         {
-            Append(val.ToString(CultureInfo.InvariantCulture));
-            return this;
+            return Append(val.ToString(CultureInfo.InvariantCulture));
         }
         /// <summary> 将 Double 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(Double val)
         {
-            Append(val.ToString(CultureInfo.InvariantCulture));
-            return this;
+            return Append(val.ToString(CultureInfo.InvariantCulture));
         }
         /// <summary> 将 Single 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(Single val)
         {
-            Append(val.ToString(CultureInfo.InvariantCulture));
-            return this;
+            return Append(val.ToString(CultureInfo.InvariantCulture));
         }
         /// <summary> 将 SByte 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(SByte val)
         {
-            Append((long)val);
-            return this;
+            return Append((long)val); ;
         }
         /// <summary> 将 Int16 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(Int16 val)
         {
-            Append((long)val);
-            return this;
+            return Append((long)val);
         }
         /// <summary> 将 Int32 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(Int32 val)
         {
-            Append((long)val);
-            return this;
+            return Append((long)val);
         }
         /// <summary> 将 Int64 对象转换为字符串追加到当前实例。
         /// </summary>
@@ -452,50 +497,19 @@ namespace blqw
         /// </summary>
         public QuickStringWriter Append(Byte val)
         {
-            if (val == 0)
-            {
-                TryWrite();
-                _current[_position++] = '0';
-            }
-            else if (val < 10)
-            {
-                TryWrite();
-                _current[_position++] = (char)('0' + val);
-            }
-            else if (val < 100)
-            {
-                if (TryWrite(2) == false)
-                {
-                    Flush();
-                }
-                _current[_position++] = (char)('0' + val / 10);
-                _current[_position++] = (char)('0' + val % 10);
-            }
-            else
-            {
-                if (TryWrite(3) == false)
-                {
-                    Flush();
-                }
-                _current[_position++] = (char)('0' + val / 100);
-                _current[_position++] = (char)('0' + val / 10 % 10);
-                _current[_position++] = (char)('0' + val % 10);
-            }
-            return this;
+            return Append((UInt64)val);
         }
         /// <summary> 将 UInt16 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(UInt16 val)
         {
-            Append((UInt64)val);
-            return this;
+            return Append((UInt64)val);
         }
         /// <summary> 将 UInt32 对象转换为字符串追加到当前实例。
         /// </summary>
         public QuickStringWriter Append(UInt32 val)
         {
-            Append((UInt64)val);
-            return this;
+            return Append((UInt64)val);
         }
         /// <summary> 将 UInt64 对象转换为字符串追加到当前实例。
         /// </summary>
@@ -593,6 +607,12 @@ namespace blqw
             }
             return this;
         }
+        /// <summary> 
+        /// </summary>
+        /// <param name="charArray"></param>
+        /// <param name="offset"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public QuickStringWriter Append(char[] charArray, int offset, int length)
         {
             fixed (char* p = charArray)
@@ -734,10 +754,41 @@ namespace blqw
         /// </summary>
         /// <param name="val">可格式化对象</param>
         /// <param name="format">格式化参数</param>
-        /// <returns></returns>
-        public QuickStringWriter Append(IFormattable val, string format)
+        /// <param name="provider">格式化机制</param>
+        public QuickStringWriter Append(IFormattable val, string format, IFormatProvider provider)
         {
-            return Append(val.ToString(format, null));
+            if (val is DateTime)
+            {
+                if (string.Equals(format, "yyyy-MM-dd HH:mm:ss", StringComparison.Ordinal))
+                {
+                    return Append((DateTime)val, true, true, false);
+                }
+                if (string.Equals(format, "yyyy-MM-dd HH:mm:ss.fff", StringComparison.Ordinal))
+                {
+                    return Append((DateTime)val, true, true, true);
+                }
+                if (string.Equals(format, "HH:mm:ss", StringComparison.Ordinal))
+                {
+                    return Append((DateTime)val, false, true, false);
+                }
+                if (string.Equals(format, "HH:mm:ss.fff", StringComparison.Ordinal))
+                {
+                    return Append((DateTime)val, false, true, true);
+                }
+                if (string.Equals(format, "yyyy-MM-dd", StringComparison.Ordinal))
+                {
+                    return Append((DateTime)val, false, false, false);
+                }
+                if (string.Equals(format, "fff", StringComparison.Ordinal))
+                {
+                    return Append((DateTime)val, false, false, true);
+                }
+            }
+            else if (val is Guid && (format == null || format.Length == 1))
+            {
+                return Append((Guid)val, format[0]);
+            }
+            return Append(val.ToString(format, provider));
         }
         #endregion
 
@@ -831,13 +882,16 @@ namespace blqw
             if (mark == 1)
             {
                 Close();
+                _buffer = null;
             }
             else
             {
                 GC.SuppressFinalize(this);
             }
             System.Runtime.InteropServices.Marshal.FreeHGlobal(_currIntPtr);
+            _currIntPtr = IntPtr.Zero;
             System.Runtime.InteropServices.Marshal.FreeHGlobal(_numberIntPtr);
+            _numberIntPtr = IntPtr.Zero;
         }
 
         ~QuickStringWriter()
