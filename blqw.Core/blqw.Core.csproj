@@ -43,12 +43,18 @@
   <ItemGroup>
     <Compile Include="Assertor.cs" />
     <Compile Include="CodeTimer.cs" />
+    <Compile Include="Literacy\Convert2.cs" />
+    <Compile Include="Converter\Converter.cs" />
+    <Compile Include="Converter\BaseConverter.cs" />
+    <Compile Include="Converter\ObjectConverter.cs" />
+    <Compile Include="Converter\StringConverter.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="CounterChangedEventArgs.cs" />
-    <Compile Include="DataConverter.cs" />
+    <Compile Include="DynamicCompile.cs" />
+    <Compile Include="Converter\IConverter.cs" />
+    <Compile Include="Obsolete\DataConverter.cs" />
     <Compile Include="DictionaryEx.cs" />
     <Compile Include="Disposable.cs" />
-    <Compile Include="ExtendMethods\Type.cs" />
     <Compile Include="Literacy\AttributeCollection.cs" />
     <Compile Include="Literacy\Delegate.cs" />
     <Compile Include="Literacy\ILoadMember.cs" />
@@ -62,7 +68,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EasyStringReader.cs" />
     <Compile Include="QuickStringWriter.cs" />
-    <Compile Include="StringConverter.cs" />
+    <Compile Include="Obsolete\StringConverter.cs" />
     <Compile Include="UsingLock.cs" />
     <Compile Include="UsingLock2.cs" />
     <Compile Include="WinApi.cs" />
@@ -70,7 +76,9 @@
   <ItemGroup>
     <None Include="mklink.bat" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ExtendMethods\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

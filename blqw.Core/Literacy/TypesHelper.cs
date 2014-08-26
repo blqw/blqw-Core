@@ -182,7 +182,8 @@ Type t)
         }
 
         /// <summary> 获取类型是否属于特殊类型
-        /// 除了基元类型以外,Guid,TimeSpan,DateTime,DBNull,所有指针,以及这些类型的可空值类型,都属于特殊类型
+        /// 除了基元类型以外String,Guid,TimeSpan,DateTime,DBNull,所有指针,以及这些类型的可空值类型,都属于特殊类型
+        /// <para>(基元类型包括Boolean、Byte、SByte、Int16、UInt16、Int32、UInt32、Int64、UInt64、IntPtr、UIntPtr、Char、Double 和 Single)</para>
         /// </summary>
         public static bool IsSpecialType(
 #if !NF2

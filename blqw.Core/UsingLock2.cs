@@ -102,7 +102,7 @@ namespace blqw
                 return new Lock(_lockSlim, false);
             }
         }
-
+        
         /// <summary> 进入写入锁定模式,该模式下只允许同时执行一个读操作
         /// <para>退出读锁请将返回对象释放,建议使用using语块</para>
         /// <para>Enabled为false时,返回Disposable.Empty;</para>

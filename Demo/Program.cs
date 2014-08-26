@@ -11,50 +11,85 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Environment.NewLine);
-            Console.WriteLine("{0,-10}:{1}","message","aaa");
-            var a = StringBuilderTimer();
-            var b = QuickStringWriterTimer();
-            Console.WriteLine(a.Equals(b, StringComparison.OrdinalIgnoreCase));
+            object obj;
+            Convert2.TryParseObject(1, typeof(MyEnum), out obj);
+            Console.WriteLine(obj);
             CodeTimer.Initialize();
-
-            CodeTimer.Time("A", 1000, () => StringBuilderTimer());
-            CodeTimer.Time("B", 1000, () => QuickStringWriterTimer());
-
+            Test3();
         }
 
-        static string StringBuilderTimer()
+        public static void Test1()
         {
-            var sw = new StringBuilder(2048);
-            for (int i = 0; i < 1000; i++)
-            {
-                sw.Append(135456);
-                sw.Append("aaaaaaaa");
-                sw.Append(DateTime.MinValue.ToString("yyyy-MM-dd HH:mm:ss"));
-                sw.Append(Guid.Empty);
-                sw.Append(true);
-                sw.Append(123456.45678);
-            }
-            return sw.ToString();
+            CodeTimer.Time("string -> enum : system", 100000, () => {
+                Enum.Parse(typeof(MyEnum), "A", false);
+            });
+            CodeTimer.Time("string -> enum : my", 100000, () => {
+                Converter.String.ChangedType("A", typeof(MyEnum), null, false);
+            });
+
+            CodeTimer.Time("CreateDelegate", 100000, () => {
+                Converter.String.CreateDelegate(typeof(MyEnum));
+            });
+            var conv = Converter.String.CreateDelegate(typeof(MyEnum));
+            CodeTimer.Time("Delegate", 100000, () => {
+                object obj;
+                conv("A", out obj);
+            });
         }
 
-
-        static string QuickStringWriterTimer()
+        public static void Test2()
         {
-            using (var sw = new QuickStringWriter())
-            {
-                for (int i = 0; i < 1000; i++)
-                {
-                    sw.Append(135456);
-                    sw.Append("aaaaaaaa");
-                    sw.Append(DateTime.MinValue);
-                    sw.Append(Guid.Empty);
-                    sw.Append(true);
-                    sw.Append(123456.45678);
-                }
-                return sw.ToString();
-            }
+            string str = "1";
+            Type type = typeof(int);
+            CodeTimer.Time("string -> int : system", 100000, () => {
+                int obj;
+                int.TryParse(str, out obj);
+            });
+            CodeTimer.Time("string -> int : system2", 100000, () => {
+                Convert.ChangeType(str, type);
+            });
+            CodeTimer.Time("string -> int : my", 100000, () => {
+                Converter.String.ChangedType(str, type, null, false);
+            });
+
+            CodeTimer.Time("CreateDelegate", 100000, () => {
+                Converter.String.CreateDelegate(type);
+            });
+            var conv = Converter.String.CreateDelegate(type);
+            CodeTimer.Time("Delegate", 100000, () => {
+                object obj;
+                conv(str, out obj);
+            });
         }
 
+        public static void Test3()
+        {
+            string str = "1";
+            Type type = typeof(string);
+            CodeTimer.Time("string -> string : system2", 100000, () => {
+                Convert.ChangeType(str, type);
+            });
+            CodeTimer.Time("string -> string : my", 100000, () => {
+                Converter.String.ChangedType(str, type, null, false);
+            });
+
+            CodeTimer.Time("CreateDelegate", 100000, () => {
+                Converter.String.CreateDelegate(type);
+            });
+            var conv = Converter.String.CreateDelegate(type);
+            CodeTimer.Time("Delegate", 100000, () => {
+                object obj;
+                conv(str, out obj);
+            });
+        }
+    }
+
+
+    public enum MyEnum
+    {
+        A = 1,
+        B = 2,
+        C = 4,
+        D = 8,
     }
 }
