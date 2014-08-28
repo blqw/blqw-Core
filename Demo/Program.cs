@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using blqw;
 using System.Diagnostics;
+using System.Data;
 
 namespace Demo
 {
@@ -11,85 +12,25 @@ namespace Demo
     {
         static void Main(string[] args)
         {
-            object obj;
-            Convert2.TryParseObject(1, typeof(MyEnum), out obj);
-            Console.WriteLine(obj);
-            CodeTimer.Initialize();
-            Test3();
+            DataTable dt1 = new DataTable("User");
+            dt1.Columns.Add("UID", typeof(Guid));
+            dt1.Columns.Add("Name", typeof(string));
+            dt1.Columns.Add("Birthday", typeof(DateTime));
+            dt1.Columns.Add("Sex", typeof(int));
+            dt1.Columns.Add("IsDeleted", typeof(bool));
+            dt1.Rows.Add(Guid.NewGuid(), "blqw", DateTime.Parse("1986-10-29"), 1, false);
+            dt1.Rows.Add(Guid.NewGuid(), "小明", DateTime.Parse("1990-1-1"), 1, false);
+            dt1.Rows.Add(Guid.NewGuid(), "小华", DateTime.Parse("1990-2-2"), 0, false);
+            var users = Convert2.ToList<User>(dt1);
         }
 
-        public static void Test1()
+        class User
         {
-            CodeTimer.Time("string -> enum : system", 100000, () => {
-                Enum.Parse(typeof(MyEnum), "A", false);
-            });
-            CodeTimer.Time("string -> enum : my", 100000, () => {
-                Converter.String.ChangedType("A", typeof(MyEnum), null, false);
-            });
-
-            CodeTimer.Time("CreateDelegate", 100000, () => {
-                Converter.String.CreateDelegate(typeof(MyEnum));
-            });
-            var conv = Converter.String.CreateDelegate(typeof(MyEnum));
-            CodeTimer.Time("Delegate", 100000, () => {
-                object obj;
-                conv("A", out obj);
-            });
+            public Guid UID { get; set; }
+            public string Name { get; set; }
+            public DateTime Birthday { get; set; }
+            public int Sex { get; set; }
+            public bool IsDeleted { get; set; }
         }
-
-        public static void Test2()
-        {
-            string str = "1";
-            Type type = typeof(int);
-            CodeTimer.Time("string -> int : system", 100000, () => {
-                int obj;
-                int.TryParse(str, out obj);
-            });
-            CodeTimer.Time("string -> int : system2", 100000, () => {
-                Convert.ChangeType(str, type);
-            });
-            CodeTimer.Time("string -> int : my", 100000, () => {
-                Converter.String.ChangedType(str, type, null, false);
-            });
-
-            CodeTimer.Time("CreateDelegate", 100000, () => {
-                Converter.String.CreateDelegate(type);
-            });
-            var conv = Converter.String.CreateDelegate(type);
-            CodeTimer.Time("Delegate", 100000, () => {
-                object obj;
-                conv(str, out obj);
-            });
-        }
-
-        public static void Test3()
-        {
-            string str = "1";
-            Type type = typeof(string);
-            CodeTimer.Time("string -> string : system2", 100000, () => {
-                Convert.ChangeType(str, type);
-            });
-            CodeTimer.Time("string -> string : my", 100000, () => {
-                Converter.String.ChangedType(str, type, null, false);
-            });
-
-            CodeTimer.Time("CreateDelegate", 100000, () => {
-                Converter.String.CreateDelegate(type);
-            });
-            var conv = Converter.String.CreateDelegate(type);
-            CodeTimer.Time("Delegate", 100000, () => {
-                object obj;
-                conv(str, out obj);
-            });
-        }
-    }
-
-
-    public enum MyEnum
-    {
-        A = 1,
-        B = 2,
-        C = 4,
-        D = 8,
     }
 }

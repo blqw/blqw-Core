@@ -227,6 +227,15 @@ namespace blqw
             }
         }
 
+        public object Convert(object input)
+        {
+            object value;
+            if (TryParse(input, out value))
+            {
+                return value;
+            }
+                throw new InvalidCastException(string.Concat("值 '", ((object)input ?? "<NULL>").ToString(), "' 无法转为 ", DisplayName, " 类型"));
+        }
         #region 私有方法
 
         /// <summary> 获取当前类型的 TypeCodes 值
@@ -377,7 +386,6 @@ namespace blqw
 
         private LiteracyTryParse CreateDelegate()
         {
-            var type = IsNullable ? NullableUnderlyingType.Type : Type;
             switch (TypeCodes)
             {
                 case TypeCodes.Empty:
@@ -434,11 +442,13 @@ namespace blqw
                 case TypeCodes.UIntPtr:
                     return CreateDelegate<UIntPtr>(Convert2.TryParseUIntPtr);
                 case TypeCodes.Enum:
-                    var parse = TryParseEnumMethod.MakeGenericMethod(type);
+                    var type = IsNullable ? NullableUnderlyingType.Type : Type;
+                    var parse = Convert2.TryParseEnumMethod.MakeGenericMethod(type);
                     var create = this.GetType().GetMethod("CreateDelegate", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                     create = create.MakeGenericMethod(type);
-                    return (LiteracyTryParse)create.Invoke(null, new object[] { Delegate.CreateDelegate(typeof(TryParseHandler<>).MakeGenericType(type), parse) });
+                    return (LiteracyTryParse)create.Invoke(null, new object[] { Delegate.CreateDelegate(typeof(LiteracyTryParse<>).MakeGenericType(type), parse) });
                 default:
+                    type = IsNullable ? NullableUnderlyingType.Type : Type;
                     return (object input, out object result) => {
                         if (type.IsInstanceOfType(input))
                         {
@@ -451,21 +461,7 @@ namespace blqw
             }
         }
 
-        private static readonly System.Reflection.MethodInfo TryParseEnumMethod = GetTryParseEnumMethod();
-
-        private static System.Reflection.MethodInfo GetTryParseEnumMethod()
-        {
-            foreach (var m in typeof(Convert2).GetMethods())
-            {
-                if (m.Name == "TryParseEnum" && m.IsGenericMethod)
-                {
-                    return m;
-                }
-            }
-            return null;
-        }
-
-        private static LiteracyTryParse CreateDelegate<T>(TryParseHandler<T> tryParse)
+        private static LiteracyTryParse CreateDelegate<T>(LiteracyTryParse<T> tryParse)
         {
             return (object input, out object result) => {
                 T t;
@@ -479,7 +475,6 @@ namespace blqw
             };
         }
 
-        private delegate bool TryParseHandler<T>(object input, out T result);
         #endregion
 
         public override bool Equals(object obj)
@@ -500,5 +495,6 @@ namespace blqw
         {
             return this.Type.GetHashCode();
         }
+
     }
 }

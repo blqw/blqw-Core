@@ -8,6 +8,11 @@ namespace blqw
     /// </summary>
     public static class TypesHelper
     {
+        private static class GenericCache<T>
+        {
+            public readonly static TypeInfo TypeInfo = GetTypeInfo(typeof(T));
+        }
+
         private static readonly Dictionary<Type, TypeInfo> Cache = CreateCache();
 
         private static Dictionary<Type, TypeInfo> CreateCache()
@@ -26,8 +31,9 @@ namespace blqw
         /// <returns></returns>
         public static TypeInfo GetTypeInfo<T>()
         {
-            return GetTypeInfo(typeof(T));
+            return GenericCache<T>.TypeInfo;
         }
+
 
         /// <summary> 获取TypeInfo对象
         /// </summary>

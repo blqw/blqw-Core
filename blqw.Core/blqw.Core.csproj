@@ -44,14 +44,9 @@
     <Compile Include="Assertor.cs" />
     <Compile Include="CodeTimer.cs" />
     <Compile Include="Literacy\Convert2.cs" />
-    <Compile Include="Converter\Converter.cs" />
-    <Compile Include="Converter\BaseConverter.cs" />
-    <Compile Include="Converter\ObjectConverter.cs" />
-    <Compile Include="Converter\StringConverter.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="CounterChangedEventArgs.cs" />
     <Compile Include="DynamicCompile.cs" />
-    <Compile Include="Converter\IConverter.cs" />
     <Compile Include="Obsolete\DataConverter.cs" />
     <Compile Include="DictionaryEx.cs" />
     <Compile Include="Disposable.cs" />
