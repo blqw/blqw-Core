@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 
 namespace blqw
@@ -2247,6 +2246,24 @@ namespace blqw
             }
             return StringToEnum(input.ToString(), enumType, out result);
         }
+
+#if NF2
+        private static bool NF2EnumTryParse<T>(object input, out T result)
+            where T : struct, IComparable, IFormattable, IConvertible
+        {
+            try
+            {
+                result = (T)Enum.Parse(typeof(T), input.ToString(), false);
+                return true;
+            }
+            catch
+            {
+                result = default(T);
+                return false;
+            }
+        }
+#endif
+
         public static bool TryParseEnum<T>(object input, out T result)
             where T : struct, IComparable, IFormattable, IConvertible
         {
@@ -2262,7 +2279,11 @@ namespace blqw
             var str = input as string;
             if (str != null)
             {
-                return Enum.TryParse<T>(str, out result);
+#if NF2
+                return NF2EnumTryParse(str, out result);
+#else
+                return Enum.TryParse<T>(str, false, out result);
+#endif
             }
             if (input == null)
             {
@@ -2292,7 +2313,11 @@ namespace blqw
                 default:
                     break;
             }
-            return Enum.TryParse<T>(input.ToString(), out result);
+#if NF2
+            return NF2EnumTryParse(input.ToString(), out result);
+#else
+            return Enum.TryParse<T>(input.ToString(),false, out result);
+#endif
         }
         public static bool TryParseObject(object input, Type outputType, out object result)
         {
@@ -2409,7 +2434,7 @@ namespace blqw
         }
 
         #region StringToAny
-        public static bool StringToBoolean(string input, out bool value)
+        private static bool StringToBoolean(string input, out bool value)
         {
             if (input == null)
             {
@@ -2473,23 +2498,15 @@ namespace blqw
             value = false;
             return false;
         }
-        public static bool StringToDateTime(string input, out DateTime value)
+        private static bool StringToDateTime(string input, out DateTime value)
         {
             return DateTime.TryParse(input, out  value);
         }
-        public static bool StringToTimeSpan(string input, out TimeSpan value)
+        private static bool StringToTimeSpan(string input, out TimeSpan value)
         {
             return TimeSpan.TryParse(input, out  value);
         }
-        public static bool StringToDateTime(string input, string format, out DateTime value)
-        {
-            return DateTime.TryParseExact(input, format, null, DateTimeStyles.None, out  value);
-        }
-        public static bool StringToTimeSpan(string input, string format, out TimeSpan value)
-        {
-            return TimeSpan.TryParseExact(input, format, null, out  value);
-        }
-        public static bool StringToByte(string input, out byte value)
+        private static bool StringToByte(string input, out byte value)
         {
             if (byte.TryParse(input, out value))
             {
@@ -2502,7 +2519,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToDecimal(string input, out decimal value)
+        private static bool StringToDecimal(string input, out decimal value)
         {
             if (decimal.TryParse(input, out value))
             {
@@ -2515,7 +2532,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToDouble(string input, out double value)
+        private static bool StringToDouble(string input, out double value)
         {
             if (double.TryParse(input, out value))
             {
@@ -2528,7 +2545,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToInt16(string input, out short value)
+        private static bool StringToInt16(string input, out short value)
         {
             if (short.TryParse(input, out value))
             {
@@ -2541,7 +2558,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToInt32(string input, out int value)
+        private static bool StringToInt32(string input, out int value)
         {
             if (int.TryParse(input, out value))
             {
@@ -2554,7 +2571,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToInt64(string input, out long value)
+        private static bool StringToInt64(string input, out long value)
         {
             if (long.TryParse(input, out value))
             {
@@ -2567,7 +2584,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToSByte(string input, out sbyte value)
+        private static bool StringToSByte(string input, out sbyte value)
         {
             if (sbyte.TryParse(input, out value))
             {
@@ -2580,7 +2597,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToSingle(string input, out float value)
+        private static bool StringToSingle(string input, out float value)
         {
             if (float.TryParse(input, out value))
             {
@@ -2593,7 +2610,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToUInt16(string input, out ushort value)
+        private static bool StringToUInt16(string input, out ushort value)
         {
             if (ushort.TryParse(input, out value))
             {
@@ -2606,7 +2623,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToUInt32(string input, out uint value)
+        private static bool StringToUInt32(string input, out uint value)
         {
             if (uint.TryParse(input, out value))
             {
@@ -2619,7 +2636,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToUInt64(string input, out ulong value)
+        private static bool StringToUInt64(string input, out ulong value)
         {
             if (ulong.TryParse(input, out value))
             {
@@ -2632,7 +2649,7 @@ namespace blqw
             value = 0;
             return false;
         }
-        public static bool StringToGuid(string input, out Guid value)
+        private static bool StringToGuid(string input, out Guid value)
         {
             if (input == null)
             {
@@ -2642,12 +2659,12 @@ namespace blqw
             if (input.Length > 30)
             {
 #if NF2
-                try 
-	            {	
+                try
+                {
                     value = new Guid(input);
                     return true;
-	            }
-	            catch { }
+                }
+                catch { }
 #else
                 if (Guid.TryParse(input, out value))
                 {
@@ -2673,7 +2690,7 @@ namespace blqw
             value = Guid.Empty;
             return false;
         }
-        public static bool StringToEnum(string input, Type enumType, out Enum value)
+        private static bool StringToEnum(string input, Type enumType, out Enum value)
         {
             try
             {
@@ -2778,14 +2795,14 @@ namespace blqw
             return false;
         }
         private static readonly NumberStyles _hexstyle = NumberStyles.HexNumber;
-        static readonly NumberFormatInfo _numformat = NumberFormatInfo.InvariantInfo;
+        private static readonly NumberFormatInfo _numformat = NumberFormatInfo.InvariantInfo;
         #endregion
 
         #region ToEntity
 
         public static T ToEntity<T>(DbDataReader reader)
         {
-            Assertor.AreNull(reader, "reader");
+            AreNull(reader, "reader");
             T model = default(T);
             FillEntity(reader, ref model);
             return model;
@@ -2793,7 +2810,7 @@ namespace blqw
 
         public static bool FillEntity<T>(DbDataReader reader, ref T model)
         {
-            Assertor.AreNull(reader, "reader");
+            AreNull(reader, "reader");
             if (reader.Read() == false)
             {
                 return false;
@@ -2819,7 +2836,7 @@ namespace blqw
 
         public static List<T> ToList<T>(DbDataReader reader)
         {
-            Assertor.AreNull(reader, "reader");
+            AreNull(reader, "reader");
             var ti = TypesHelper.GetTypeInfo<T>();
             var lit = ti.IgnoreCaseLiteracy;
             var props = GetProperties(reader, lit);
@@ -2844,9 +2861,17 @@ namespace blqw
             return list;
         }
 
+        private static void AreNull(object value, string name)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(name);
+            }
+        }
+
         public static T ToEntity<T>(DataRow row)
         {
-            Assertor.AreNull(row, "reader");
+            AreNull(row, "row");
             var model = default(T);
             FillEntity(row, ref model);
             return model;
@@ -2854,7 +2879,7 @@ namespace blqw
 
         public static bool FillEntity<T>(DataRow row, ref T model)
         {
-            Assertor.AreNull(row, "reader");
+            AreNull(row, "row");
             if (row.HasErrors)
             {
                 return false;
@@ -2879,7 +2904,7 @@ namespace blqw
 
         public static List<T> ToList<T>(DataTable table)
         {
-            Assertor.AreNull(table, "reader");
+            AreNull(table, "table");
             var ti = TypesHelper.GetTypeInfo(typeof(T));
             var lit = ti.IgnoreCaseLiteracy;
             var props = GetProperties(table, lit);

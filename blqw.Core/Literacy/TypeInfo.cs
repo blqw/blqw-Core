@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 
 namespace blqw
@@ -35,7 +36,11 @@ namespace blqw
             if (type.IsEnum)
             {
                 IsNumberType = true;
-                EnumUnderlyingType = TypesHelper.GetTypeInfo(type.GetEnumUnderlyingType());
+                EnumUnderlyingType = TypesHelper.GetTypeInfo(Enum.GetUnderlyingType(Type));
+            }
+            else if (IsNullable)
+            {
+                IsNumberType = NullableUnderlyingType.IsNumberType;
             }
             else
             {
