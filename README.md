@@ -1,7 +1,7 @@
 ## 自用的核心类库
 
 ----------
-* Literacy ------------ 使用IL.Emit方式快速访问属性,字段和方法[介绍](http://www.cnblogs.com/blqw/p/Literacy.html)[更新日志](https://code.csdn.net/jy02305022/blqw.Literacy)
+* Literacy ------------ 使用IL.Emit方式快速访问属性,字段和方法[介绍](http://www.cnblogs.com/blqw/p/Literacy.html)|[更新日志](https://code.csdn.net/jy02305022/blqw.Literacy)
 * Assertor ------------ 断言器,用于判断参数值和抛出异常,[介绍](http://www.cnblogs.com/blqw/p/3783992.html)
 * CodeTimer ----------- 代码性能测试类,改编自'老赵'的同名类
 * Counter ------------- 计数器,分为单线程模式和多线程模式[介绍](http://www.cnblogs.com/blqw/p/3719640.html)
