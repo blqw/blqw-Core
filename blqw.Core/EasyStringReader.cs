@@ -49,6 +49,7 @@ namespace blqw
     }
 
     [DebuggerDisplay("长度:{Length} 当前位置:{Position} 字符:{DebugCurrent}")]
+    [Obsolete("目前设计有缺陷,有时间再改")]
     public sealed class EasyStringReader
     {
         #region 静态

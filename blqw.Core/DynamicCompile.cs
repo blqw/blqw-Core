@@ -8,8 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace blqw
 {
-    /// <summary>
-    /// 动态编译
+    /// <summary> 动态编译
     /// </summary>
     public static class DynamicCompile
     {

@@ -52,10 +52,6 @@
       <Name>blqw.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="json1.txt" />
-    <Content Include="json2.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>taskkill /f /fi "pid gt 0" /im "$(TargetFileName)" /t</PreBuildEvent>
