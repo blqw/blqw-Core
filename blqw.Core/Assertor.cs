@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace blqw
@@ -88,7 +87,12 @@ namespace blqw
         /// <param name="name">参数名称</param>
         public static void AreNullOrWhiteSpace(string value, string name)
         {
+#if !NF2
             if (string.IsNullOrWhiteSpace(value))
+#else
+            if (value == null || value.Length == 0 ||
+                (value[0] == ' ' && value.Trim().Length == 0))
+#endif
             {
                 throw new ArgumentNullException(name, "字符串不能为null或连续空白");
             }
