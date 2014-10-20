@@ -14,7 +14,7 @@ namespace blqw
             Time("", 1, () => { });
         }
 
-        public static void Time(string name, int iteration, Action action)
+        public static void Time(string name, int iteration, ThreadStart action)
         {
             if (String.IsNullOrEmpty(name)) return;
 
