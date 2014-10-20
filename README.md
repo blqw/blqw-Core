@@ -8,8 +8,10 @@
 * DictionaryEx -------- 增强版键值对字典,对系统默认的Dictionary行为进行扩展,[介绍](http://www.cnblogs.com/blqw/p/3784353.html)
 * Disposable ---------- 可释放资源的基类或组件,可定义托管对象释放事件和非托管对象释放事件
 * DynamicCompile ------ 动态编译类,[介绍](http://www.cnblogs.com/blqw/p/DynamicCompile4.html)
+* EasyStringReader ---- 未完成
 * LoadResourceDll ----- 载入资源中的动态链接库(dll)文件[介绍](http://www.cnblogs.com/blqw/p/LoadResourceDll.html)
 * QuickStringWriter --- 高效的字符串拼接类[介绍](http://www.cnblogs.com/blqw/p/QuickStringWriter2.html)
+* Security ------------ 字符串加密解密
 * UsingLock ----------- 使用using代替lock操作的对象,可指定写入和读取锁定模式[介绍](http://www.cnblogs.com/blqw/p/3475734.html)
 * UsingLock2 ---------- UsingLock的 2.0版本,性能不如UsingLock
 * WinApi -------------- 用于存放 Window Api 的声明  
