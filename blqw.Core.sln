@@ -14,8 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "说明文件", "说明文�
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Literacy", "..\blqw.Literacy\Literacy\Literacy\blqw.Literacy.csproj", "{D0C3B619-180A-407B-BE4A-9C1864B2A06D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +32,6 @@ Global
 		{84D4872E-655F-4264-8934-0BA04EEEDCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84D4872E-655F-4264-8934-0BA04EEEDCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84D4872E-655F-4264-8934-0BA04EEEDCFA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0C3B619-180A-407B-BE4A-9C1864B2A06D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0C3B619-180A-407B-BE4A-9C1864B2A06D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0C3B619-180A-407B-BE4A-9C1864B2A06D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0C3B619-180A-407B-BE4A-9C1864B2A06D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
