@@ -56,16 +56,22 @@ namespace blqw
             {
                 return;
             }
-
-            //释放非托管资源
-            OnEvent(_disposeUnmanaged);
-            _disposeUnmanaged = null;
-            if (mark == 0)
+            try
             {
-                //释放托管资源
-                OnEvent(_disposeManaged);
-                _disposeManaged = null;
-                GC.SuppressFinalize(_obj);
+                ((IDisposable)this).Dispose();
+            }
+            finally
+            {
+                //释放非托管资源
+                OnEvent(_disposeUnmanaged);
+                _disposeUnmanaged = null;
+                if (mark == 0)
+                {
+                    //释放托管资源
+                    OnEvent(_disposeManaged);
+                    _disposeManaged = null;
+                    GC.SuppressFinalize(_obj);
+                }
             }
         }
 
